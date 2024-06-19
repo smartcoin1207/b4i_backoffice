@@ -1,0 +1,39 @@
+.bg-login-image {
+	background: #fbfbfb;
+}
+.bg-login-image img {
+	max-width: 100%;
+}
+
+.flag {
+	width: 24px;
+}
+div.dataTables_wrapper div.dataTables_length label,
+div.dataTables_wrapper div.dataTables_filter label {
+	margin-top: .2rem;
+	margin-right: .2rem;
+}
+
+.table-form .edit {
+	margin-top: -3px;
+	margin-bottom: -4px;
+}
+
+.table-form .td {
+	position: relative;
+}
+
+.table-form .edit-data {
+	display: none;
+}
+.table-form .edit-data input[type="text"],
+.table-form .edit-data input[type="date"],
+.table-form .edit-data select,
+.table-form .edit-data .d-inline-block {
+	width: calc( 100% - 110px );
+}
+.table-form .edit-data .save,
+.table-form .edit-data .cancel {
+	min-width: 42px;
+	text-align: center;
+}

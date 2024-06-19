@@ -1,0 +1,28 @@
+#Options +FollowSymLinks
+RewriteEngine On
+
+RewriteCond %{SCRIPT_FILENAME} !-d
+RewriteCond %{SCRIPT_FILENAME} !-f
+
+RewriteCond %{REQUEST_URI} /+[^\.]+$
+RewriteRule ^(.+[^/])$ %{REQUEST_URI}/ [R=301,L]
+
+
+RewriteRule ^dashboard/?$         ./dashboard.php [L,QSA]
+
+RewriteRule ^startup_list/?$      ./startup_list.php [L,QSA]
+RewriteRule ^startup/(.*)$        ./startup.php?id=$1 [L,QSA]
+
+RewriteRule ^main_founders/?$     ./main_founders.php [L,QSA]
+RewriteRule ^co_founders/?$       ./co_founders.php [L,QSA]
+RewriteRule ^main_founder/(.*)$   ./founder.php?type=main_founders&id=$1 [L,QSA]
+RewriteRule ^co_founder/(.*)$     ./founder.php?type=co_founders&id=$1 [L,QSA]
+
+RewriteRule ^save/?$              ./save.php [L,QSA]
+RewriteRule ^save-grant/?$        ./save-grant.php [L,QSA]
+RewriteRule ^save-status/?$       ./save-status.php [L,QSA]
+RewriteRule ^save-status-multi/?$ ./save-status-multi.php [L,QSA]
+
+RewriteRule ^export_all/?$         ./export_all.php [L,QSA]
+
+RewriteRule ^logout/?$            ./logout.php [L,QSA]

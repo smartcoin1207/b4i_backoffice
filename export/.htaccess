@@ -1,0 +1,5 @@
+AuthType Basic
+AuthName "CRM Area"
+AuthUserFile /home/www/b4i/backoffice/export/.htpasswd
+#AuthUserFile /Applications/MAMP/htdocs/B4I/www/backoffice/export/.htpasswd
+Require valid-user
