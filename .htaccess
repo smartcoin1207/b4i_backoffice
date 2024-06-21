@@ -15,8 +15,12 @@ RewriteRule ^startup/(.*)$        ./startup.php?id=$1 [L,QSA]
 
 RewriteRule ^main_founders/?$     ./main_founders.php [L,QSA]
 RewriteRule ^co_founders/?$       ./co_founders.php [L,QSA]
+RewriteRule ^startup_portfolios/?$       ./startup_portfolios.php [L,QSA]
+
 RewriteRule ^main_founder/(.*)$   ./founder.php?type=main_founders&id=$1 [L,QSA]
 RewriteRule ^co_founder/(.*)$     ./founder.php?type=co_founders&id=$1 [L,QSA]
+RewriteRule ^startup_portfolio/new/?$     ./startup_portfolio.php?new=1 [L,QSA]
+RewriteRule ^startup_portfolio/(.*)$     ./startup_portfolio.php?id=$1 [L,QSA]
 
 RewriteRule ^save/?$              ./save.php [L,QSA]
 RewriteRule ^save-grant/?$        ./save-grant.php [L,QSA]

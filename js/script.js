@@ -1,6 +1,21 @@
 (function($) {
   "use strict"; // Start of use strict
 
+  function addOption(selectElement, newValue) {
+		let selectedOptions = Array.from(selectElement.selectedOptions).map(option => option.value);
+		if (!selectedOptions.includes(newValue)) {
+			selectedOptions.push(newValue);
+		}
+		selectElement.value = '';
+		selectedOptions.forEach(value => {
+			Array.from(selectElement.options).forEach(option => {
+				if (option.value === value) {
+					option.selected = true;
+				}
+			});
+		});
+	}
+
   // Toggle the side navigation
   $("#sidebarToggle, #sidebarToggleTop").on('click', function(e) {
     $("body").toggleClass("sidebar-toggled");
@@ -131,15 +146,13 @@
 	  table.draw();
 	});
 */
-	
-	
-	
 	// Inline editing
 	$('.edit').on('click', function() {
 		if( !$('#status').prop('checked') ) return false;
 		var multi = false;
 		var $wrapper = $(this).parent().parent();
 		var text = $wrapper.find('.data-value').text();
+
 		if( $wrapper.find('.data-value').hasClass('multi') ) {
 			multi = text.split(", ");
 		} 
@@ -152,9 +165,17 @@
 				$wrapper.find('.edit-data select').focus();
 			}, 20);
 		} else {
-			multi.forEach(function(item){
-				$wrapper.find('.edit-data input[value="'+item+'"]').prop('checked', 1);
-			});
+			if($wrapper.find('.edit-data select').attr('name') == 'investor_ids[]'){
+				const multiSelect = document.getElementById('investor_ids');
+				multi.forEach(function(item) {
+					addOption(multiSelect, item);
+				});
+				multiSelect.loadOptions();
+			} else {
+				multi.forEach(function(item){
+					$wrapper.find('.edit-data input[value="'+item+'"]').prop('checked', 1);
+				});
+			}			
 		}
 		$wrapper.find('.edit-data').fadeIn();
 	});
@@ -188,7 +209,10 @@
 	function saveData($wrapper) {
 		var setFlag = 0;
 		var replace = 0;
-		if( $wrapper.find('.edit-data input[type="checkbox"]').length > 0  ) {
+		if($wrapper.find(".edit-data select").attr("name") == "investor_ids[]") {
+			var text = $wrapper.find('.edit-data select').val();
+			var field = "investor_ids";
+		} else if( $wrapper.find('.edit-data input[type="checkbox"]').length > 0  ) {
 			var text = '';
 			var replace = 1;
 			$wrapper.find('.edit-data input[type="checkbox"]:checked').each(function() {
@@ -203,14 +227,47 @@
 		}
 		if( text==undefined) {
 			text = $wrapper.find('.edit-data select').val();
+			
 			if( $wrapper.find('.edit-data select').attr('name')=='startup_country' || $wrapper.find('.edit-data select').attr('name')=='company_country' || $wrapper.find('.edit-data select').attr('name')=='nationality') setFlag = 1;
 			var field = $wrapper.find('.edit-data select').attr('name');
 		}
+
 		if( field==='sustainability' && text==null ) {
 			alert('Please select a value');
 			return false;
 		}
+
+		if(field == "startup_id") {
+			var label = $wrapper.find('.edit-data select option:selected').text();
+			$wrapper.find(".text-value").text(label);
+		}
+
 		$wrapper.find('.data-value').text(text);
+		$wrapper.find('.text-value').text(text);
+		if(field == "startup_id") {
+			var label = $wrapper.find('.edit-data select option:selected').text();
+			var oldURL = $wrapper.find("a.text-value").attr("href");
+			var newURL = oldURL.replace(/\/\d+\//, '/' + text + '/');
+			var dataBatch = $wrapper.find('.edit-data select option:selected').data("batch");
+			var batchNumber = dataBatch.replace(/\D/g, "");
+
+			$wrapper.find(".text-value").text(label);
+			$wrapper.find("a.text-value").attr("href", newURL);
+			$("span.call_name.data-value").text(batchNumber);
+		}
+
+		if(field == 'investor_ids') {
+			const selectElement = document.getElementById('investor_ids');
+            const selectedOptions = Array.from(selectElement.selectedOptions);
+            const selectedTexts = selectedOptions.map(option => option.text).join(', ');
+			$wrapper.find('.text-value').text(selectedTexts);
+		}
+
+		if(field == "announced_date") {
+			var announcedDate = new Date(text);
+			$("span.announced_date_year.data-value").text(announcedDate.getFullYear());
+		}
+
 		$wrapper.find('.edit-data').hide();
 		if( setFlag ) {
 			var $img = $wrapper.find('img');
@@ -218,7 +275,10 @@
 			var newPath = $wrapper.find('img').attr('data-src') + text + '.svg';
 			$img.attr('src', newPath).attr('title', text);
 		}
-		if( replace ) {
+		if(field == "investor_ids") {
+			const textString = text.map(item => `{${item}}`).join('');
+			text = textString;
+		} else if( replace ) {
 			text = text.replaceAll(', ', ' | ');
 		}
 		// post data to save
@@ -247,8 +307,7 @@
 		// end
 		$wrapper.find('.show-data').fadeIn();
 	}
-	
-	
+
 	// GRANT
 	$('#grant-now').on('click', function(e) {
 		e.preventDefault();

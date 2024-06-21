@@ -24,7 +24,7 @@ if( isset($_SESSION["adminId"]) ) {
 if( !empty($_POST["id"]) && !empty($_POST["type"]) && !empty($_POST["field"]) && isset($_POST["data"]) ) {
 	
 	$table = $_POST["type"];
-	if( $table!="startups" && $table!="main_founders" && $table!="co_founders" ) die("$table - Wrong type param");
+	if( $table!="startups" && $table!="main_founders" && $table!="co_founders" && $table!="startup_portfolios" ) die("$table - Wrong type param");
 	
 	DB::update($table, array(
 		$_POST["field"] => $_POST["data"]
