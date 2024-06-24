@@ -145,7 +145,7 @@ include("_head.php");
                                                         } else { 
                                                         ?>
                                                             <div class="show-data">
-                                                                <a href="<?php echo BASEURL;?>backoffice/startup/<?php echo $startup_portfolio["startup_id"];?>/" class="text-value" <?php echo $style;?>><?php echo htmlspecialchars($startup_portfolio["startup_name"]);?></a>
+                                                                <a href="<?php echo BASEURL;?>backoffice/startup/<?php echo $startup_portfolio["startup_id"];?>/" class="text-value" <?php echo $style;?>><?php echo htmlentities($startup_portfolio["startup_name"]);?></a>
                                                                 <span class="data-value invisible"><?php echo $startup_portfolio["startup_id"];?></span>
                                                                 <a class="btn btn-light btn-sm float-right edit"><i class="fas fa-pencil-alt"></i></a>
                                                             </div>
@@ -168,7 +168,7 @@ include("_head.php");
                                                                     $batch = preg_replace('/Batch\s+/', '', $startup_portfolio["call_name"]);
                                                                 }
                                                             ?>
-                                                            <span class="call_name data-value"><?php echo htmlspecialchars($batch);?></span>
+                                                            <span class="call_name data-value"><?php echo htmlentities($batch);?></span>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -184,7 +184,7 @@ include("_head.php");
                                                             </div>
                                                         <?php } else { ?>
                                                             <div class="show-data">
-                                                                <b class="text-gray-900 data-value"><?php echo htmlspecialchars($startup_portfolio["raised"]);?></b>
+                                                                <b class="text-gray-900 data-value"><?php echo htmlentities($startup_portfolio["raised"]);?></b>
                                                                 <a class="btn btn-light btn-sm float-right edit"><i class="fas fa-pencil-alt"></i></a>
                                                             </div>
                                                             <div class="edit-data">
@@ -207,7 +207,7 @@ include("_head.php");
                                                             </div>
                                                         <?php } else { ?>
                                                             <div class="show-data">
-                                                                <b class="text-gray-900 data-value"><?php echo htmlspecialchars($startup_portfolio["staged"]);?></b>
+                                                                <b class="text-gray-900 data-value"><?php echo htmlentities($startup_portfolio["staged"]);?></b>
                                                                 <a class="btn btn-light btn-sm float-right edit"><i class="fas fa-pencil-alt"></i></a>
                                                             </div>
                                                             <div class="edit-data">
@@ -256,7 +256,7 @@ include("_head.php");
                                                                     $year = date("Y", strtotime($startup_portfolio["announced_date"]));
                                                                 }
                                                             ?>
-                                                            <span class="announced_date_year data-value"><?php echo htmlspecialchars($year);?></span>
+                                                            <span class="announced_date_year data-value"><?php echo htmlentities($year);?></span>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -281,8 +281,8 @@ include("_head.php");
                                                             $investor_ids_string = implode(', ', $investor_ids_array);
                                                         ?>
                                                             <div class="show-data">
-                                                                <b class="text-gray-900 text-value"><?php if($startup_portfolio['investor_names']) echo htmlspecialchars(($startup_portfolio['investor_names']));?></b>
-                                                                <span class="data-value multi invisible"><?php echo htmlspecialchars($investor_ids_string); ?></span>
+                                                                <b class="text-gray-900 text-value"><?php if($startup_portfolio['investor_names']) echo htmlentities(($startup_portfolio['investor_names']));?></b>
+                                                                <span class="data-value multi invisible"><?php echo htmlentities($investor_ids_string); ?></span>
                                                                 <a class="btn btn-light btn-sm float-right edit"><i class="fas fa-pencil-alt"></i></a>
                                                             </div>
                                                             <div class="edit-data">
@@ -314,7 +314,7 @@ include("_head.php");
                                                             </div>
                                                         <?php } else { ?>
                                                             <div class="show-data">
-                                                                <b class="text-gray-900 data-value"><?php echo htmlspecialchars($startup_portfolio["notes"]);?></b>
+                                                                <b class="text-gray-900 data-value"><?php echo htmlentities($startup_portfolio["notes"]);?></b>
                                                                 <a class="btn btn-light btn-sm float-right edit"><i class="fas fa-pencil-alt"></i></a>
                                                             </div>
                                                             <div class="edit-data">

@@ -102,8 +102,6 @@ $universities = array(
 );
 sort($universities);
 
-// SELECT startups.id as startup_id, startups.startup_name, startup_portfolios.* FROM startup_portfolios LEFT JOIN startups ON startup_portfolios.startup_ids LIKE CONCAT('%{', startups.id, '}%')
-
 if( !empty($_GET) ) {
 
 	$date_start = "";
@@ -320,10 +318,8 @@ include("_head.php");
 									<tbody>
 									<?php
 									foreach($startup_portfolios as $startup_portfolio) {
-										// var_dump($startup_portfolio); die();
-										$date = date("d/m/Y", strtotime($startup_portfolio["created_on"] || ''));
-										$announced_date = date("d M Y", strtotime($startup_portfolio["announced_date"] || ''));
-										$year = date("Y", strtotime($startup_portfolio["announced_date"] || ''));
+										$announced_date = (isset($startup_portfolio['announced_date']) && $startup_portfolio['announced_date']) ? date("d M Y", strtotime($startup_portfolio["announced_date"])) : '';
+										$year = (isset($startup_portfolio['announced_date']) && $startup_portfolio['announced_date']) ? date("Y", strtotime($startup_portfolio["announced_date"])) : '';
 
 										if( $startup_portfolio["status"]=='0' ) $style = 'style="opacity:.5"';
 										else $style = '';
@@ -334,16 +330,16 @@ include("_head.php");
 											</td>
 											<td>
 												<a href="<?php echo BASEURL;?>backoffice/startup_portfolio/<?php echo $startup_portfolio["id"];?>/">
-													<?php echo htmlspecialchars($startup_portfolio["startup_name"]);?>
+													<?php echo htmlentities($startup_portfolio["startup_name"]);?>
 												</a>
 											</td>
-											<td><?php echo htmlspecialchars($startup_portfolio["call_name"]);?></td>
-											<td><?php echo htmlspecialchars($startup_portfolio["raised"]);?></td>
-											<td><?php echo htmlspecialchars($startup_portfolio["staged"]);?></td>
+											<td><?php echo htmlentities($startup_portfolio["call_name"]);?></td>
+											<td><?php echo htmlentities($startup_portfolio["raised"]);?></td>
+											<td><?php echo htmlentities($startup_portfolio["staged"]);?></td>
 											<td data-order="<?php echo $startup_portfolio["announced_date"];?>"><?php  echo $announced_date;?></td>
 											<td><?php echo $year;?></td>
-											<td><?php echo htmlspecialchars($startup_portfolio["investor_names"] ? $startup_portfolio["investor_names"] : '');?></td>
-											<td><?php echo htmlspecialchars($startup_portfolio["notes"]);?></td>
+											<td><?php echo htmlentities($startup_portfolio["investor_names"] ? $startup_portfolio["investor_names"] : '');?></td>
+											<td><?php echo htmlentities($startup_portfolio["notes"]);?></td>
 										</tr>
 									<?php
 									}
