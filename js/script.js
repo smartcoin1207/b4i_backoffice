@@ -16,6 +16,18 @@
 		});
 	}
 
+	function formatDateString(dateString) {
+		// Create a Date object from the input value
+		var date = new Date(dateString);
+		
+		// Define options for the formatted date
+		var options = { day: '2-digit', month: 'short', year: 'numeric' };
+		
+		var dateStringPre = date.toLocaleDateString('en-US', options);
+		var dateString = dateStringPre.replace(/,/g, '');
+		return dateString;
+	}
+
   // Toggle the side navigation
   $("#sidebarToggle, #sidebarToggleTop").on('click', function(e) {
     $("body").toggleClass("sidebar-toggled");
@@ -80,6 +92,11 @@
 			"sSearch": "Filter"
 		}
 	});
+
+	// setTimeout(() => {
+		// $('#dataTable').attr('data-order', '[[ 1, "desc" ]]');
+	// }, 1000);
+
 	
 /*
   var dd_html = '';
@@ -153,12 +170,13 @@
 		var $wrapper = $(this).parent().parent();
 		var text = $wrapper.find('.data-value').text();
 
-		if( $wrapper.find('.data-value').hasClass('multi') ) {
+		if( $wrapper.find('.data-value').hasClass('multi')) {
 			multi = text.split(", ");
 		} 
 		$wrapper.find('.show-data').hide();
 		if( !multi ) {
 			$wrapper.find('.edit-data input').val(text);
+			$wrapper.find('.edit-data textarea').val(text);
 			$wrapper.find('.edit-data select').val(text);
 			setTimeout(function(){
 				$wrapper.find('.edit-data input').focus();
@@ -230,7 +248,13 @@
 			
 			if( $wrapper.find('.edit-data select').attr('name')=='startup_country' || $wrapper.find('.edit-data select').attr('name')=='company_country' || $wrapper.find('.edit-data select').attr('name')=='nationality') setFlag = 1;
 			var field = $wrapper.find('.edit-data select').attr('name');
-		}
+		} 
+
+		if( text==undefined) {
+			text = $wrapper.find('.edit-data textarea').val();
+			
+			var field = $wrapper.find('.edit-data textarea').attr('name');
+		} 
 
 		if( field==='sustainability' && text==null ) {
 			alert('Please select a value');
@@ -266,6 +290,8 @@
 		if(field == "announced_date") {
 			var announcedDate = new Date(text);
 			$("span.announced_date_year.data-value").text(announcedDate.getFullYear());
+			$wrapper.find('.text-value').text(formatDateString(text));
+
 		}
 
 		$wrapper.find('.edit-data').hide();

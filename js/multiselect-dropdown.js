@@ -69,7 +69,13 @@ style.innerHTML = `
 
 .multiselect-dropdown-list div{
   padding: 5px;
+  display: flex;
+  align-items: center;
 }
+.multiselect-dropdown-list label{
+  margin-bottom: 0px;
+}
+
 .multiselect-dropdown-list input{
   height: 1.15em;
   width: 1.15em;
@@ -89,11 +95,11 @@ function MultiselectDropdown(options){
   var config={
     search:true,
     height:'15rem',
-    placeholder:'select',
+    placeholder:'Add Investors',
     txtSelected:'selected',
     txtAll:'All',
     txtRemove: 'Remove',
-    txtSearch:'search',
+    txtSearch:'Search investors',
     ...options
   };
   function newEl(tag,attrs){
@@ -118,8 +124,15 @@ function MultiselectDropdown(options){
     el.parentNode.insertBefore(div,el.nextSibling);
     var listWrap=newEl('div',{class:'multiselect-dropdown-list-wrapper'});
     var list=newEl('div',{class:'multiselect-dropdown-list',style:{height:config.height}});
-    var search=newEl('input',{class:['multiselect-dropdown-search'].concat([config.searchInput?.class??'form-control']),style:{width:'100%',display:el.attributes['multiselect-search']?.value==='true'?'block':'none'},placeholder:config.txtSearch});
-    listWrap.appendChild(search);
+
+    var search=newEl('input', { name: "new_investor", class:['multiselect-dropdown-search'].concat([config.searchInput?.class??'form-control']),style:{width:'100%',display:el.attributes['multiselect-search']?.value==='true'?'block':'none'},placeholder:config.txtSearch});
+
+    var inputContainer = newEl("div", {class: "input-container"});
+    var addButton = newEl("button", {type: "button", id: "btn-save-investor", text: "Add", style: {display: 'none'}});    
+    inputContainer.appendChild(search);
+    inputContainer.appendChild(addButton);
+
+    listWrap.appendChild(inputContainer);
     div.appendChild(listWrap);
     listWrap.appendChild(list);
 
@@ -152,7 +165,7 @@ function MultiselectDropdown(options){
           else if(ic.checked==false && existsNotSelected===undefined) ic.checked=true;
         });
   
-        list.appendChild(op);
+        // list.appendChild(op);
       }
 
       Array.from(el.options).map(o=>{
@@ -178,7 +191,7 @@ function MultiselectDropdown(options){
       div.refresh=()=>{
         div.querySelectorAll('span.optext, span.placeholder').forEach(t=>div.removeChild(t));
         var sels=Array.from(el.selectedOptions);
-        if(sels.length>(el.attributes['multiselect-max-items']?.value??5)){
+        if(sels.length>(el.attributes['multiselect-max-items']?.value??5)){``
           div.appendChild(newEl('span',{class:['optext','maxselected'],text:sels.length+' '+config.txtSelected}));          
         }
         else{
@@ -197,10 +210,16 @@ function MultiselectDropdown(options){
     el.loadOptions();
     
     search.addEventListener('input',()=>{
+      let count = 0;
       list.querySelectorAll(":scope div:not(.multiselect-dropdown-all-selector)").forEach(d=>{
         var txt=d.querySelector("label").innerText.toUpperCase();
-        d.style.display=txt.includes(search.value.toUpperCase())?'block':'none';
+        d.style.display=txt.includes(search.value.toUpperCase())?'flex':'none';
+        if(d.querySelector("label").innerText.toUpperCase() == search.value.toUpperCase()) {
+          count++;
+        }
       });
+        // if(search.va)
+        addButton.style.display= count == 0 ? 'block' : 'none';
     });
 
     div.addEventListener('click',()=>{

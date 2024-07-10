@@ -1,5 +1,5 @@
 <?php
-$startups = DB::query("SELECT * FROM startups");
+$startups = DB::query("SELECT * FROM startups WHERE granted_on IS NOT NULL ORDER BY startup_name ASC");
 ?>
 
 <select name="startup_id" class="form-control d-inline">

@@ -37,3 +37,30 @@ div.dataTables_wrapper div.dataTables_filter label {
 	min-width: 42px;
 	text-align: center;
 }
+
+.input-container {
+	position: relative;
+}
+
+.input-container input {
+	width: 100% !important;
+	padding-right: 50px; /* Adjust based on button width */
+	padding: 10px;
+}
+
+.input-container button {
+	position: absolute;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	padding: 0 24px;
+	border: none;
+	background-color: #ebebeb;
+	color: #6e707e;
+	cursor: pointer;
+	border-radius: 0 4px 4px 0;
+}
+
+.input-container button:hover {
+	background-color: rgb(177, 171, 171);
+}

@@ -113,6 +113,11 @@ if( !empty($_GET) ) {
 		$date_end = "AND sp.announced_date <= '".$_GET["date_end"]."'";
 	}
 
+	$year = "";
+	if( !empty($_GET["year"]) ) {
+		$year = "AND YEAR(sp.announced_date) = '".$_GET["year"]."'";
+	}
+
 	$startup_name = "";
 	if( !empty($_GET["startup_name"]) ) {
 		$startup_name = "AND s.startup_name LIKE '%".$_GET["startup_name"]."%'";
@@ -143,21 +148,21 @@ if( !empty($_GET) ) {
 		$investors = "HAVING investor_names LIKE '%".$_GET["investor_ids"]."%'";
 	}
 
-	$query = "SELECT sp.*, s.call_name as call_name, s.startup_name as startup_name, GROUP_CONCAT(iv.id) AS investor_ids_list, GROUP_CONCAT(iv.name) AS investor_names
+	$query = "SELECT sp.*, s.call_name as call_name, s.startup_name as startup_name, GROUP_CONCAT(iv.id) AS investor_ids_list, GROUP_CONCAT(iv.name SEPARATOR ', ') AS investor_names
 						FROM startup_portfolios as sp
 						JOIN startups as s ON s.id = sp.startup_id
 						LEFT JOIN investors AS iv ON FIND_IN_SET(iv.id, REPLACE(REPLACE(REPLACE(sp.investor_ids, '}{', ','), '{', ''), '}', '')) > 0
-						WHERE 1=1 $date_start $date_end $startup_name $call_name $raised_min $raised_max $staged 
+						WHERE 1=1 $date_start $date_end $startup_name $call_name $raised_min $raised_max $staged $year
 						GROUP BY sp.id
 						$investors
 						ORDER BY sp.created_on DESC";
 	// export
 	if( !empty($_GET["action"]) && $_GET["action"]=="export" ) {
-		$query = "SELECT sp.*, s.call_name as call_name, s.startup_name as startup_name, GROUP_CONCAT(iv.id) AS investor_ids_list, GROUP_CONCAT(iv.name) AS investor_names
+		$query = "SELECT sp.*, s.call_name as call_name, s.startup_name as startup_name, GROUP_CONCAT(iv.id) AS investor_ids_list, GROUP_CONCAT(iv.name SEPARATOR ', ') AS investor_names
 						FROM startup_portfolios as sp
 						JOIN startups as s ON s.id = sp.startup_id
 						LEFT JOIN investors AS iv ON FIND_IN_SET(iv.id, REPLACE(REPLACE(REPLACE(sp.investor_ids, '}{', ','), '{', ''), '}', '')) > 0
-						WHERE 1=1 $date_start $date_end $startup_name $call_name $raised_min $raised_max $staged 
+						WHERE 1=1 $date_start $date_end $startup_name $call_name $raised_min $raised_max $staged $year
 						GROUP BY sp.id
 						$investors
 						ORDER BY sp.created_on DESC";
@@ -174,8 +179,8 @@ if( !empty($_GET) ) {
 	s.call_name AS call_name,
     s.startup_name AS startup_name,
     GROUP_CONCAT(iv.id) AS investor_ids_list, 
-    GROUP_CONCAT(iv.name) AS investor_names 
-	FROM startup_portfolios AS sp 
+    GROUP_CONCAT(iv.name SEPARATOR ', ') AS investor_names 
+	FROM startup_portfolios AS sp
 	JOIN startups as s ON s.id = sp.startup_id 
 	LEFT JOIN investors AS iv ON FIND_IN_SET(iv.id, REPLACE(REPLACE(REPLACE(sp.investor_ids, '}{', ','), '{', ''), '}', '')) > 0
 	GROUP BY sp.id
@@ -217,9 +222,6 @@ include("_head.php");
 						<div class="card-header d-sm-flex align-items-center justify-content-between py-3">
 							<h6 class="m-0 font-weight-bold text-primary d-inline-block">Startup Portfolios</h6>
 							<div>
-								<a id="new" href="<?php echo BASEURL;?>backoffice/startup_portfolio/new" class="d-none d-sm-inline-block mr-2 btn-link btn-sm" style="text-decoration: underline; text-decoration-thickness: 1.5px;">
-								 	<i class="fas fa-plus-circle fa-lg mr-2"></i>Add Startup Portfolio
-								</a>
 								<a id="search" href="#search" class="d-none d-sm-inline-block btn btn-sm btn-light shadow-sm mr-1">
 									<i class="fas fa-search fa-sm"></i>&nbsp;&nbsp;advanced search
 								</a>
@@ -235,6 +237,17 @@ include("_head.php");
 								<label for="date_start" class="mr-3">Announced Date Range</label>
 								<input type="date" class="form-control" name="date_start" id="date_start" value="<?php if( !empty($_GET["date_start"]) ) echo $_GET["date_start"];?>">&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp; 
 								<input type="date" class="form-control" name="date_end" id="date_end"  value="<?php if( !empty($_GET["date_end"]) ) echo $_GET["date_end"];?>">
+
+								<label for="date" class="mr-3 ml-3">Year</label>
+								<select name="year" class="form-control d-inline">
+									<option value="">Not set</option>
+									<?php
+									for( $year=date("Y"); $year>=1960; $year--) {
+										$selected = $year == $_GET['year'] ? "selected" : "";
+										echo "<option value=\"$year\" $selected>$year</option>";
+									}
+									?>
+								</select>
 							</div>
 							<hr>
 							<div class="form-inline">
@@ -256,7 +269,7 @@ include("_head.php");
 
 							<hr>
 							<div class="form-inline">
-								<label for="raised" class="mr-3">Raised Range</label>
+								<label for="raised" class="mr-3">Raised Range €</label>
 								<input type="text" class="form-control" name="raised_min" id="raised_min" value="<?php if( !empty($_GET["raised_min"]) ) echo $_GET["raised_min"];?>">&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp; 
 								<input type="text" class="form-control" name="raised_max" id="raised_max"  value="<?php if( !empty($_GET["raised_max"]) ) echo $_GET["raised_max"];?>">
 							</div>
@@ -264,7 +277,7 @@ include("_head.php");
 							<hr>
 							<div class="form-inline">
 								<label class="m-3" for="staged">Stage</label>
-								<input type="text" name="staged" id="staged" class="form-control" value="<?php if( !empty($_GET["staged"]) ) echo $_GET["staged"];?>">
+								<?php $selected_value = !empty($_GET["staged"]) ? $_GET["staged"]: "";  include("_include/startup_stagedoptions.php"); ?>
 
 								<label class="m-3" for="investor_ids">Investors</label>
 								<input type="text" name="investor_ids" id="investor_ids" class="form-control" value="<?php if( !empty($_GET["investor_ids"]) ) echo $_GET["investor_ids"];?>">
@@ -298,8 +311,8 @@ include("_head.php");
 											<th class="text-gray-500">Funding Stage</th>
 											<th class="text-gray-500">Announced Date</th>
 											<th class="text-gray-500">Year</th>
-											<th class="text-gray-500">Investors</th>
-											<th class="text-gray-500">Notes</th>
+											<th class="text-gray-500" data-orderable="false">Investors</th>
+											<th class="text-gray-500" data-orderable="false">Notes</th>
 										</tr>
 									</thead>
 									<tfoot>
@@ -321,7 +334,7 @@ include("_head.php");
 										$announced_date = (isset($startup_portfolio['announced_date']) && $startup_portfolio['announced_date']) ? date("d M Y", strtotime($startup_portfolio["announced_date"])) : '';
 										$year = (isset($startup_portfolio['announced_date']) && $startup_portfolio['announced_date']) ? date("Y", strtotime($startup_portfolio["announced_date"])) : '';
 
-										if( $startup_portfolio["status"]=='0' ) $style = 'style="opacity:.5"';
+										if( $startup_portfolio["status"]=='0' ) $style = 'style="opacity:0.5"';
 										else $style = '';
 									?>
 										<tr <?php echo $style;?>>
@@ -334,12 +347,12 @@ include("_head.php");
 												</a>
 											</td>
 											<td><?php echo htmlentities($startup_portfolio["call_name"]);?></td>
-											<td><?php echo htmlentities($startup_portfolio["raised"]);?></td>
+											<td style="text-wrap: nowrap;"><?php echo htmlentities("€ " . $startup_portfolio["raised"]);?></td>
 											<td><?php echo htmlentities($startup_portfolio["staged"]);?></td>
 											<td data-order="<?php echo $startup_portfolio["announced_date"];?>"><?php  echo $announced_date;?></td>
 											<td><?php echo $year;?></td>
 											<td><?php echo htmlentities($startup_portfolio["investor_names"] ? $startup_portfolio["investor_names"] : '');?></td>
-											<td><?php echo htmlentities($startup_portfolio["notes"]);?></td>
+											<td style="min-width: 200px;"><?php echo htmlentities($startup_portfolio["notes"]);?></td>
 										</tr>
 									<?php
 									}
@@ -352,6 +365,7 @@ include("_head.php");
 					<a id="new" href="<?php echo BASEURL;?>backoffice/startup_portfolio/new" class="d-none d-sm-inline-block mr-2 btn-link btn-sm" style="text-decoration: underline; text-decoration-thickness: 1.5px;">
 						<i class="fas fa-plus-circle fa-lg mr-2"></i>Add Startup Portfolio
 					</a>
+					<div style="margin-top: 50px;"></div>
 				</div>
 				<!-- /.container-fluid -->
 				
@@ -390,6 +404,7 @@ include("_head.php");
 	<script>
 	var _BASEURL = '<?php echo BASEURL;?>backoffice/';
 	var _TYPE = 'startup_portfolios';
+	
 	</script>
 <?php
 include("_footer.php");

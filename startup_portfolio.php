@@ -8,7 +8,7 @@ if(isset($_POST["cmd"]) && $_POST["cmd"] == "new_startup") {
     $startup_id = isset($_POST["startup_id"]) ? $_POST["startup_id"] : "";
     $raised = isset($_POST["raised"]) ? $_POST["raised"] : 0;
     $staged = isset($_POST["staged"]) ? $_POST["staged"] : "";
-    $announced_date = isset($_POST["announced_date"]) ? $_POST["announced_date"] : "";
+    $announced_date = isset($_POST["announced_date"]) && $_POST['announced_date'] ? $_POST["announced_date"] : date('Y-m-d');
     $investors = isset($_POST["investor_ids"]) ? $_POST["investor_ids"] : [];
     $notes = isset($_POST["notes"]) ? $_POST["notes"] : "";
 
@@ -31,15 +31,26 @@ if(isset($_POST["cmd"]) && $_POST["cmd"] == "new_startup") {
 if(isset($_POST["cmd"]) && $_POST["cmd"] == "new_investor") {
     $name = isset($_POST['name']) ? $_POST['name'] : '';
     if($name) {
-        DB::insert("investors", array("name" => $name));
-        $insert_id = DB::insertId();
-        $new_investor = array(
-            'status' => 'success',
-            'id' => $insert_id,
-            'name' => $name
-        );
-        echo json_encode($new_investor);
+        $existingInvestor = DB::queryFirstRow("SELECT * FROM investors WHERE name = %s", $name);
+
+        if($existingInvestor) {
+            $response = array(
+                'status' => 'error',
+                'message' => 'Investor with this name already exist.'
+            );
+        } else {
+            DB::insert("investors", array("name" => $name));
+            $insert_id = DB::insertId();
+            $response = array(
+                'status' => 'success',
+                'id' => $insert_id,
+                'name' => $name
+            );
+        }
+
+        echo json_encode($response);
     }
+
     exit;
 }
 /** ------------------------------------------- */
@@ -61,7 +72,7 @@ if(!$isNew) {
             s.startup_name as startup_name,
             s.call_name as call_name,
             GROUP_CONCAT(iv.id) AS investor_ids_list, 
-            GROUP_CONCAT(iv.name) AS investor_names 
+            GROUP_CONCAT(iv.name SEPARATOR ', ') AS investor_names
         FROM startup_portfolios sp
         JOIN startups s ON s.id = sp.startup_id
         LEFT JOIN investors AS iv ON FIND_IN_SET(iv.id, REPLACE(REPLACE(REPLACE(sp.investor_ids, '}{', ','), '{', ''), '}', '')) > 0
@@ -72,7 +83,7 @@ if(!$isNew) {
     if( empty($startup_portfolio) ) die("Startup Portfolio not found");
 }
 
-$investors = DB::query("SELECT * FROM investors");
+$investors = DB::query("SELECT * FROM investors ORDER BY name ASC");
 
 $section = "startup_portfolios_list";
 include("_head.php");
@@ -168,13 +179,13 @@ include("_head.php");
                                                                     $batch = preg_replace('/Batch\s+/', '', $startup_portfolio["call_name"]);
                                                                 }
                                                             ?>
-                                                            <span class="call_name data-value"><?php echo htmlentities($batch);?></span>
+                                                            <span class="call_name data-value" id="batch_number"><?php echo htmlentities($batch);?></span>
                                                         </div>
                                                     </td>
                                                 </tr>
 
                                                 <tr>
-                                                    <td class="text-right text-gray-500" style="width: 30%">Raised</td>
+                                                    <td class="text-right text-gray-500" style="width: 30%">Raised €</td>
                                                     <td>
                                                         <?php 
                                                         if($isNew) {
@@ -203,7 +214,7 @@ include("_head.php");
                                                         if($isNew) {
                                                         ?>
                                                             <div class="show-data">
-                                                                <input type="text" name="staged" class="form-control d-inline">
+                                                               <?php $selected_value="";  include("_include/startup_stagedoptions.php"); ?>
                                                             </div>
                                                         <?php } else { ?>
                                                             <div class="show-data">
@@ -211,7 +222,7 @@ include("_head.php");
                                                                 <a class="btn btn-light btn-sm float-right edit"><i class="fas fa-pencil-alt"></i></a>
                                                             </div>
                                                             <div class="edit-data">
-                                                                <input type="text" name="staged" class="form-control d-inline">
+                                                                <?php $selected_value=""; include("_include/startup_stagedoptions.php"); ?>
                                                                 <a class="btn btn-success float-right save"><i class="fas fa-check"></i></a>
                                                                 <a class="btn btn-light float-right mr-2 cancel"><i class="fas fa-times"></i></a>
                                                             </div>
@@ -268,13 +279,14 @@ include("_head.php");
                                                     
                                                         if($isNew) {
                                                         ?>
-                                                            <button type="button" class="btn btn-link btn-xs" id="add_new_investor_btn" style="font-size: 0.9rem; font-weight:400">Add New Investor</button>
-                                                            <hr>
-                                                            <select name="investor_ids[]" id="investor_ids" class="form-control" multiple multiselect-search="true" multiselect-select-all="true" multiselect-max-items="10" onchange="console.log(this.selectedOptions)">
-                                                                <?php foreach ($investors as $investor): ?>
-                                                                    <option value="<?php echo $investor['id']; ?>"><?php echo $investor['name']; ?></option>
-                                                                <?php endforeach; ?>
-                                                            </select>
+                                                            <div class="flex direction-row" style="display: flex;">
+                                                                <select name="investor_ids[]" id="investor_ids" class="form-control" multiple multiselect-search="true" multiselect-select-all="true" multiselect-max-items="10" onchange="console.log(this.selectedOptions)">
+                                                                    <?php foreach ($investors as $investor): ?>
+                                                                        <option value="<?php echo $investor['id']; ?>"><?php echo $investor['name']; ?></option>
+                                                                    <?php endforeach; ?>
+                                                                </select>
+                                                                
+                                                            </div>
                                                         <?php } else {
                                                             $investor_ids = ($startup_portfolio['investor_ids_list']) ? $startup_portfolio['investor_ids_list'] : '';
                                                             $investor_ids_array = array_map('trim', explode(',', $investor_ids));
@@ -286,14 +298,13 @@ include("_head.php");
                                                                 <a class="btn btn-light btn-sm float-right edit"><i class="fas fa-pencil-alt"></i></a>
                                                             </div>
                                                             <div class="edit-data">
-                                                                <div class="mb-2">
-                                                                    <button type="button" class="btn btn-link btn-xs" id="add_new_investor_btn" style="font-size: 0.9rem; font-weight:400">Add New Investor</button>
-                                                                    <hr>
+                                                                <div class="mb-2" style="display: flex;">
                                                                     <select name="investor_ids[]" id="investor_ids" class="form-control" multiple multiselect-search="true" multiselect-select-all="true" multiselect-max-items="10" onchange="console.log(this.selectedOptions)">
                                                                         <?php foreach ($investors as $investor): ?>
                                                                             <option value="<?php echo $investor['id']; ?>"  ><?php echo $investor['name']; ?></option>
                                                                         <?php endforeach; ?>
                                                                     </select>
+                                                                    
                                                                 </div>
 
                                                                 <a class="btn btn-success float-right save"><i class="fas fa-check"></i></a>
@@ -310,7 +321,7 @@ include("_head.php");
                                                         if($isNew) {
                                                         ?>
                                                             <div class="show-data">
-                                                                <input type="text" name="notes" class="form-control d-inline">
+                                                                <textarea type="text" name="notes" rows="4" class="form-control d-inline"></textarea>
                                                             </div>
                                                         <?php } else { ?>
                                                             <div class="show-data">
@@ -318,7 +329,7 @@ include("_head.php");
                                                                 <a class="btn btn-light btn-sm float-right edit"><i class="fas fa-pencil-alt"></i></a>
                                                             </div>
                                                             <div class="edit-data">
-                                                                <input type="text" name="notes" class="form-control d-inline">
+                                                                <textarea type="text" name="notes" rows="4" class="form-control d-inline"></textarea>
                                                                 <a class="btn btn-success float-right save"><i class="fas fa-check"></i></a>
                                                                 <a class="btn btn-light float-right mr-2 cancel"><i class="fas fa-times"></i></a>
                                                             </div>
@@ -373,25 +384,6 @@ include("_head.php");
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-light" id="btn-dismiss-modal" data-dismiss="modal">Cancel</button>
 	        <button type="button" class="btn btn-primary" id="btn-confirm-modal">Confirm</button>
-	      </div>
-	    </div>
-	  </div>
-	</div>
-
-    <div class="modal fade" id="new_investors_modal">
-	  <div class="modal-dialog modal-dialog-centered">
-	    <div class="modal-content">
-	      <div class="modal-header">
-	        <h5 class="modal-title">Add New Investor</h5>
-	      </div>
-	      <div class="modal-body">
-	        <form id="form-dismiss-device" method="post">
-		        <input type="text" name="new_investor" class="form-control">
-		      </form>
-	      </div>
-	      <div class="modal-footer">
-	        <button type="button" class="btn btn-light" id="btn-dismiss-modal" data-dismiss="modal">Cancel</button>
-	        <button type="button" class="btn btn-primary" id="btn-save-investor">Confirm</button>
 	      </div>
 	    </div>
 	  </div>
