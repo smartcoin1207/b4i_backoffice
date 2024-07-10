@@ -55,10 +55,12 @@
                     let newOption = document.createElement('option');
                     newOption.value = dataObj.id;
                     newOption.text = dataObj.name;
+                    newOption.selected = true;
                     
                     investorSelect.add(newOption);
                     investorSelect.loadOptions();
                     $('input[name="new_investor"]').val('');
+                    $("#btn-save-investor").css("display", "none");
                 }
             })
             .fail(function(jqXHR, textStatus, errorThrown) {

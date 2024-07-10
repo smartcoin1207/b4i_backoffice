@@ -99,7 +99,7 @@ function MultiselectDropdown(options){
     txtSelected:'selected',
     txtAll:'All',
     txtRemove: 'Remove',
-    txtSearch:'Search investors',
+    txtSearch:'Search or add investors',
     ...options
   };
   function newEl(tag,attrs){
@@ -218,8 +218,7 @@ function MultiselectDropdown(options){
           count++;
         }
       });
-        // if(search.va)
-        addButton.style.display= count == 0 ? 'block' : 'none';
+        addButton.style.display= (count == 0 && search.value.trim()) ? 'block' : 'none';
     });
 
     div.addEventListener('click',()=>{
