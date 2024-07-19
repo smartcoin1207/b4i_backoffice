@@ -36,7 +36,7 @@
 			<li class="nav-item">
 				<a class="nav-link" href="<?php echo BASEURL;?>backoffice/startup_portfolios/">
 					<i class="fas fa-fw fa-book-open"></i>
-					<span>Startup portfolios</span></a>
+					<span>Startup portfolio</span></a>
 			</li>
 
 			<li class="nav-item">

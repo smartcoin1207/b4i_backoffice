@@ -220,7 +220,7 @@ include("_head.php");
 					<!-- Users Card > Table -->
 					<div class="card shadow mb-4">
 						<div class="card-header d-sm-flex align-items-center justify-content-between py-3">
-							<h6 class="m-0 font-weight-bold text-primary d-inline-block">Startup Portfolios</h6>
+							<h6 class="m-0 font-weight-bold text-primary d-inline-block">Startup Portfolio</h6>
 							<div>
 								<a id="search" href="#search" class="d-none d-sm-inline-block btn btn-sm btn-light shadow-sm mr-1">
 									<i class="fas fa-search fa-sm"></i>&nbsp;&nbsp;advanced search

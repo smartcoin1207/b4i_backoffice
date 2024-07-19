@@ -178,6 +178,13 @@
 			$wrapper.find('.edit-data input').val(text);
 			$wrapper.find('.edit-data textarea').val(text);
 			$wrapper.find('.edit-data select').val(text);
+
+			$wrapper.find('.edit-data select').val(text).select2();
+			$('.select2-container').css('width', 'calc(100% - 100px)');
+			$('.select2-selection').css('height', 'calc(1.5em + .75rem + 2px)');
+			$('.select2-search__field').addClass('form-control');
+			$('.select2-results ul').css('max-height', '400px'); 
+
 			setTimeout(function(){
 				$wrapper.find('.edit-data input').focus();
 				$wrapper.find('.edit-data select').focus();

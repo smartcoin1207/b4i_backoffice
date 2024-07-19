@@ -27,6 +27,32 @@ if(isset($_POST["cmd"]) && $_POST["cmd"] == "new_startup") {
 }
 /** -------------------------------------------------------- */
 
+/** -------------- Delete Startup Portfolio. ------------------- */
+if(isset($_POST["cmd"]) && $_POST["cmd"] == "delete_startup") {
+    $id = $_POST["id"];
+
+    if($id) {
+        try {
+            $startup_portfolio = DB::queryFirstRow('SELECT * FROM startup_portfolios WHERE id = %i', $id);
+            if ($startup_portfolio) {
+                DB::delete('startup_portfolios', 'id=%i', $id);
+                echo json_encode(['success' => true]);
+            } else {
+                http_response_code(404);
+                echo json_encode(['success' => false, 'message' => 'No entry found with the given ID.']);
+            }
+            
+            
+            exit;
+        } catch (MeekroDBException $e) {
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => 'Failed to delete the entry: ' . $e->getMessage()]);
+            exit;
+        }
+    }
+}
+/** -------------------------------------------------------- */
+
 /** --------------- New Investor --------------- */
 if(isset($_POST["cmd"]) && $_POST["cmd"] == "new_investor") {
     $name = isset($_POST['name']) ? $_POST['name'] : '';
@@ -114,7 +140,7 @@ include("_head.php");
 
 					<!-- Page Heading -->
 					<div class="d-sm-flex align-items-center justify-content-between mb-4">
-						<a href="javascript:history.back();" class="btn btn-light btn-sm"><i class="fas fa-angle-left fa-sm"></i>&nbsp;&nbsp;back</a>
+						<a href="<?php echo BASEURL;?>backoffice/startup_portfolios/" class="btn btn-light btn-sm"><i class="fas fa-angle-left fa-sm"></i>&nbsp;&nbsp;back</a>
 					</div>
 
 					<!-- Content Row -->
@@ -153,6 +179,7 @@ include("_head.php");
                                                         <?php 
                                                         if($isNew) {
                                                             include("_include/startup_selectoptions.php");
+                                                            
                                                         } else { 
                                                         ?>
                                                             <div class="show-data">
@@ -162,6 +189,7 @@ include("_head.php");
                                                             </div>
                                                             <div class="edit-data">
                                                                 <?php include("_include/startup_selectoptions.php"); ?>
+                                                            
                                                                 <a class="btn btn-success float-right save"><i class="fas fa-check"></i></a>
                                                                 <a class="btn btn-light float-right mr-2 cancel"><i class="fas fa-times"></i></a>
                                                             </div>
@@ -344,15 +372,23 @@ include("_head.php");
                             </form>
                             <?php if($isNew) { ?>
                                 <button id="new_startup_btn" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" style="float: right;">
-                                <i class="fas fa-plus-circle fa-sm text-white-50"></i>&nbsp;&nbsp; Save Startup
+                                    <i class="fas fa-plus-circle fa-sm text-white-50"></i>&nbsp;&nbsp; Save Startup
                                 </button>
+                            <?php } else { ?>
+                                <!-- <a id="delete_startup_btn" data-id="<?php echo $startup_portfolio['id']; ?>" class="d-none d-sm-inline-block   " style="float: right; margin-right: 10px;">
+                                    <i class="fas fa-trash fa-sm text-white-50"></i>&nbsp;&nbsp; Delete this entry
+                                </a> -->
+                                <a id="delete_startup_btn" data-id="<?php echo $startup_portfolio['id']; ?>" class="d-none d-sm-inline-block mr-2 btn-link btn-sm" style="float:right; text-decoration: underline; text-decoration-thickness: 1.5px; color: red;">
+                                    <i class="fas fa-trash fa-lg mr-2"></i>Delete this entry
+                                </a>
                             <?php } ?>
+
 						</div><!-- .col -->
 					</div>
 					<!-- End of Content Row -->
 					<!-- Page End -->
 					<div class="d-sm-flex align-items-center justify-content-between mb-4">
-						<a href="javascript:history.back();" class="btn btn-light btn-sm"><i class="fas fa-angle-left fa-sm"></i>&nbsp;&nbsp;back</a>
+						<a href="<?php echo BASEURL;?>backoffice/startup_portfolios/" class="btn btn-light btn-sm"><i class="fas fa-angle-left fa-sm"></i>&nbsp;&nbsp;back</a>
 					</div>
 
 				</div>

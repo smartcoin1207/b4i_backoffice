@@ -1,7 +1,11 @@
 (function($) {
     "use strict"; // Start of use strict 
 
-    
+    $('.startup_select').select2();
+    $('.select2-container').css('width', 'calc(100%)');
+    $('.select2-selection').css('height', 'calc(1.5em + .75rem + 2px)');
+    $('.select2-search__field').addClass('form-control');
+    $('.select2-results ul').css('max-height', '400px');   
 
     setTimeout(() => {
         $('#new_startup_btn').on('click', function() {
@@ -26,6 +30,32 @@
     
             // If all validations pass, submit the form
             $("#startup_portfolio_form").submit();
+        });
+
+        $('#delete_startup_btn').on('click', function() {
+            var startupPortofolioId = $(this).data('id');
+
+            // Confirm the action with the user
+            if (confirm('Are you sure you want to delete this entry?')) {
+                // User confirmed, proceed with AJAX request
+                $.ajax({
+                    url:  _BASEURL+'startup_portfolio/', // Change this to your server-side script
+                    type: 'POST',
+                    data: { 
+                        cmd: 'delete_startup',
+                        id: startupPortofolioId 
+                    },
+                    success: function(response) {
+                        window.location.href = _BASEURL +  'startup_portfolios';
+                    },
+                    error: function(xhr, status, error) {
+                        alert('An error occurred while deleting the entry.');
+                    }
+                });
+            } else {
+                // User canceled, do nothing
+                alert('Deletion canceled.');
+            }
         });
         
         $('#btn-save-investor').on('click', function() {
@@ -100,5 +130,6 @@
                 console.error('No date selected.');
             }
         });
+
     }, 1000);
   })(jQuery);
