@@ -378,8 +378,8 @@ include("_head.php");
                                 <!-- <a id="delete_startup_btn" data-id="<?php echo $startup_portfolio['id']; ?>" class="d-none d-sm-inline-block   " style="float: right; margin-right: 10px;">
                                     <i class="fas fa-trash fa-sm text-white-50"></i>&nbsp;&nbsp; Delete this entry
                                 </a> -->
-                                <a id="delete_startup_btn" data-id="<?php echo $startup_portfolio['id']; ?>" class="d-none d-sm-inline-block mr-2 btn-link btn-sm" style="float:right; text-decoration: underline; text-decoration-thickness: 1.5px; color: red;">
-                                    <i class="fas fa-trash fa-lg mr-2"></i>Delete this entry
+                                <a id="delete_startup_btn" data-id="<?php echo $startup_portfolio['id']; ?>" class="btn d-sm-inline-block mr-2 btn-light btn-sm" style="float:right; text-decoration: underline; text-decoration-thickness: 1.5px; color: red">
+                                    <i class="fas fa-trash fa-lg mr-2"></i>Delete
                                 </a>
                             <?php } ?>
 
