@@ -33,7 +33,7 @@
 					<span>Co-founders</span></a>
 			</li>
 
-			<li class="nav-item">
+			<li class="nav-item <?php if( $section=="startup_portfolios_list" ) echo "active";?>">
 				<a class="nav-link" href="<?php echo BASEURL;?>backoffice/startup_portfolios/">
 					<i class="fas fa-fw fa-book-open"></i>
 					<span>Startup portfolio</span></a>
