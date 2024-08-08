@@ -177,6 +177,17 @@
 		if( !multi ) {
 			$wrapper.find('.edit-data input').val(text);
 			$wrapper.find('.edit-data textarea').val(text);
+
+			var field = $wrapper.find('.edit-data select').attr('name');
+			if(field == 'staged') {
+				if(text == 'Series A') {
+					text = "SeriesA";
+				} else if(text == 'Series B') {
+					text = "SeriesB";
+				} else if(text == "Series C") {
+					text = "SeriesC";
+				}
+			}
 			$wrapper.find('.edit-data select').val(text);
 
 			$wrapper.find('.edit-data select').val(text).select2();
@@ -275,6 +286,17 @@
 
 		$wrapper.find('.data-value').text(text);
 		$wrapper.find('.text-value').text(text);
+
+		if(field == 'staged') {
+			if(text == 'SeriesA') {
+				$wrapper.find(".data-value").text("Series A");
+			} else if(text =='SeriesB') {
+				$wrapper.find(".data-value").text("Series B");
+			} else if(text == 'SeriesC') {
+				$wrapper.find(".data-value").text("Series C");
+			}
+		} 
+
 		if(field == "startup_id") {
 			var label = $wrapper.find('.edit-data select option:selected').text();
 			var oldURL = $wrapper.find("a.text-value").attr("href");
@@ -298,7 +320,6 @@
 			var announcedDate = new Date(text);
 			$("span.announced_date_year.data-value").text(announcedDate.getFullYear());
 			$wrapper.find('.text-value').text(formatDateString(text));
-
 		}
 
 		$wrapper.find('.edit-data').hide();
@@ -314,6 +335,7 @@
 		} else if( replace ) {
 			text = text.replaceAll(', ', ' | ');
 		}
+
 		// post data to save
 		$.ajax({
 			url:  _BASEURL+'save/',

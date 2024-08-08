@@ -11,6 +11,7 @@ if(isset($_POST["cmd"]) && $_POST["cmd"] == "new_startup") {
     $announced_date = isset($_POST["announced_date"]) && $_POST['announced_date'] ? $_POST["announced_date"] : date('Y-m-d');
     $investors = isset($_POST["investor_ids"]) ? $_POST["investor_ids"] : [];
     $notes = isset($_POST["notes"]) ? $_POST["notes"] : "";
+    $acceleration_type = isset($_POST['acceleration_type']) ? $_POST['acceleration_type'] : "";
 
     if(!is_numeric($raised)) {
         $raised = 0;
@@ -19,7 +20,7 @@ if(isset($_POST["cmd"]) && $_POST["cmd"] == "new_startup") {
     $investor_ids = '{' . implode('}{', $investors) . '}';
 
     if($startup_id) {
-        DB::insert("startup_portfolios", array("startup_id" => $startup_id, "raised" => $raised, "staged" => $staged, "announced_date" => $announced_date, "investor_ids" => $investor_ids, "notes" => $notes));
+        DB::insert("startup_portfolios", array("startup_id" => $startup_id, "raised" => $raised, "acceleration_type" => $acceleration_type, "staged" => $staged, "announced_date" => $announced_date, "investor_ids" => $investor_ids, "notes" => $notes));
         $insert_id = DB::insertId();
         header("location: ".BASEURL."backoffice/startup_portfolio/$insert_id/");
         exit;
@@ -41,7 +42,6 @@ if(isset($_POST["cmd"]) && $_POST["cmd"] == "delete_startup") {
                 http_response_code(404);
                 echo json_encode(['success' => false, 'message' => 'No entry found with the given ID.']);
             }
-            
             
             exit;
         } catch (MeekroDBException $e) {
@@ -107,6 +107,16 @@ if(!$isNew) {
     ", $id);
 
     if( empty($startup_portfolio) ) die("Startup Portfolio not found");
+
+    if($startup_portfolio) {
+        if($startup_portfolio['staged'] == 'SeriesA') {
+            $startup_portfolio['staged'] = "Series A";
+        } else if($startup_portfolio['staged'] == 'SeriesB') {
+            $startup_portfolio['staged'] = "Series B";
+        } else if($startup_portfolio['staged'] == 'SeriesC') {
+            $startup_portfolio['staged'] = "Series C";
+        }
+    }
 }
 
 $investors = DB::query("SELECT * FROM investors ORDER BY name ASC");
@@ -228,6 +238,29 @@ include("_head.php");
                                                             </div>
                                                             <div class="edit-data">
                                                                 <input type="number" name="raised" class="form-control d-inline" style="width: calc(100% - 110px);">
+                                                                <a class="btn btn-success float-right save"><i class="fas fa-check"></i></a>
+                                                                <a class="btn btn-light float-right mr-2 cancel"><i class="fas fa-times"></i></a>
+                                                            </div>
+                                                        <?php  } ?>
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td class="text-right text-gray-500" style="width: 30%">Type</td>
+                                                    <td>
+                                                        <?php 
+                                                        if($isNew) {
+                                                        ?>
+                                                            <div class="show-data">
+                                                               <?php $selected_value="";  include("_include/startup_acceleration_options.php"); ?>
+                                                            </div>
+                                                        <?php } else { ?>
+                                                            <div class="show-data">
+                                                                <b class="text-gray-900 data-value"><?php echo htmlentities($startup_portfolio["acceleration_type"] ? $startup_portfolio['acceleration_type'] : '');?></b>
+                                                                <a class="btn btn-light btn-sm float-right edit"><i class="fas fa-pencil-alt"></i></a>
+                                                            </div>
+                                                            <div class="edit-data">
+                                                                <?php $selected_value=""; include("_include/startup_acceleration_options.php"); ?>
                                                                 <a class="btn btn-success float-right save"><i class="fas fa-check"></i></a>
                                                                 <a class="btn btn-light float-right mr-2 cancel"><i class="fas fa-times"></i></a>
                                                             </div>
