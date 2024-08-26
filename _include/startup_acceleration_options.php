@@ -3,7 +3,7 @@
 ?>
 
 <select name="acceleration_type" class="form-control d-inline" value="<?php echo $value; ?>">
-    <option value="">Select Acceleration</option>
-    <option <?php if($value=="Acceleration program") echo 'selected'; ?>>Acceleration</option>
-    <option <?php if($value=="Pre-acceleration program") echo 'selected'; ?>>Pre-acceleration</option>
+    <option value=""><?php echo $all_acceleration_string ?? ''; ?></option>
+    <option <?php if($value=="Acceleration") echo 'selected'; ?>>Acceleration</option>
+    <option <?php if($value=="Pre-acceleration") echo 'selected'; ?>>Pre-acceleration</option>
 </select>

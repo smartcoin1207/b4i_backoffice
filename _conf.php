@@ -26,7 +26,7 @@ ini_set('session.gc_maxlifetime', 60*60*24);
 if( DEV ) {
 	define('BASEURL', "http://127.0.0.1/B4I/www/");
 } else {
-	define('BASEURL', "https://www.b4i.unibocconi.it/");
+	define('BASEURL', "http://localhost/b4i/");
 }
 
 
@@ -54,8 +54,8 @@ if( DEV ) {
 	DB::$password = "root";
 	DB::$dbName = "b4i";
 } else {
-	DB::$user = "admin_b4i";
-	DB::$password = "Dw2?ut42";
+	DB::$user = "root";
+	DB::$password = "";
 	DB::$dbName = "admin_b4i";
 }
 
@@ -73,7 +73,7 @@ if( DEBUG ) {
 ----------------- */
 
 // OLD $actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-$actual_link = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+$actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 
 function getCountry($iso) {
 	$country = $iso;

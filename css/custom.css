@@ -81,3 +81,22 @@ div.dataTables_wrapper div.dataTables_filter label {
     transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
 
+.accleration-type-checkbox-group {
+	/* position:absolute;  */
+	/* right: 30%;  */
+	display: flex; 
+}
+
+.custom-flex {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.custom-flex label {
+	margin-bottom: 0;
+}
+
+.custom-flex input[type="checkbox"] {
+    margin-right: 3px;
+}

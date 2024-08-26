@@ -123,6 +123,11 @@ if( !empty($_GET) ) {
 		$startup_name = "AND s.startup_name LIKE '%".$_GET["startup_name"]."%'";
 	}
 
+	$acceleration_type = "";
+	if( !empty($_GET["acceleration_type"]) ) {
+		$acceleration_type = "AND sp.acceleration_type =  '".$_GET["acceleration_type"]."'";
+	}
+
 	$call_name = "";
 	if( !empty($_GET["call_name"]) ) {
 		$call_name = "AND s.call_name = '".$_GET["call_name"]."'";
@@ -152,7 +157,7 @@ if( !empty($_GET) ) {
 						FROM startup_portfolios as sp
 						JOIN startups as s ON s.id = sp.startup_id
 						LEFT JOIN investors AS iv ON FIND_IN_SET(iv.id, REPLACE(REPLACE(REPLACE(sp.investor_ids, '}{', ','), '{', ''), '}', '')) > 0
-						WHERE 1=1 $date_start $date_end $startup_name $call_name $raised_min $raised_max $staged $year
+						WHERE 1=1 $date_start $date_end $startup_name $acceleration_type $call_name $raised_min $raised_max $staged $year
 						GROUP BY sp.id
 						$investors
 						ORDER BY sp.created_on DESC";
@@ -162,7 +167,7 @@ if( !empty($_GET) ) {
 						FROM startup_portfolios as sp
 						JOIN startups as s ON s.id = sp.startup_id
 						LEFT JOIN investors AS iv ON FIND_IN_SET(iv.id, REPLACE(REPLACE(REPLACE(sp.investor_ids, '}{', ','), '{', ''), '}', '')) > 0
-						WHERE 1=1 $date_start $date_end $startup_name $call_name $raised_min $raised_max $staged $year
+						WHERE 1=1 $date_start $date_end $startup_name $acceleration_type $call_name $raised_min $raised_max $staged $year
 						GROUP BY sp.id
 						$investors
 						ORDER BY sp.created_on DESC";
@@ -172,6 +177,8 @@ if( !empty($_GET) ) {
 		include("_startup_portfolios.php");
 		exit;
 	}
+
+	// var_dump($query); die();
 	$startup_portfolios = DB::query($query);
 } else {
 	$query = "SELECT 
@@ -251,7 +258,11 @@ include("_head.php");
 							</div>
 							<hr>
 							<div class="form-inline">
-								<label for="call_name" class="mr-3">Batch</label>
+
+								<label for="call_name" class="mr-3 ml-3">Type</label>
+								<?php $selected_value=$_GET['acceleration_type'] ?? ''; $all_acceleration_string="All"; include("_include/startup_acceleration_options.php"); ?>
+								
+								<label for="call_name" class="mr-3 ml-3">Batch</label>
 								<select class="form-control" id="call_name" name="call_name" style="width: 230px;">
 									<option value="">Not set</option>
 									<?php
@@ -266,6 +277,7 @@ include("_head.php");
 								<label class="m-3 ml-4" for="startup_name">Startup Name</label>
 								<input type="text" name="startup_name" id="startup_name" class="form-control" value="<?php if( !empty($_GET["startup_name"]) ) echo $_GET["startup_name"];?>">
 							</div>
+					
 
 							<hr>
 							<div class="form-inline">
@@ -313,6 +325,7 @@ include("_head.php");
 											<th class="text-gray-500">Year</th>
 											<th class="text-gray-500" data-orderable="false">Investors</th>
 											<th class="text-gray-500" data-orderable="false">Notes</th>
+											<th class="text-gray-500" style="display: none;" data-orderable="false">Acceleration Type</th>
 										</tr>
 									</thead>
 									<tfoot>
@@ -326,6 +339,7 @@ include("_head.php");
 											<th class="text-gray-500">Year</th>
 											<th class="text-gray-500">Investors</th>
 											<th class="text-gray-500">Notes</th>
+											<th class="text-gray-500" style="display: none;" data-orderable="false">Acceleration Type</th>
 										</tr>
 									</tfoot>
 									<tbody>
@@ -353,6 +367,7 @@ include("_head.php");
 											<td><?php echo $year;?></td>
 											<td><?php echo htmlentities($startup_portfolio["investor_names"] ? $startup_portfolio["investor_names"] : '');?></td>
 											<td style="min-width: 200px;"><?php echo htmlentities($startup_portfolio["notes"]);?></td>
+											<td style="display: none;"><?php echo htmlentities($startup_portfolio["acceleration_type"]);?></td>
 										</tr>
 									<?php
 									}

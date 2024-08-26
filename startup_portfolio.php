@@ -252,7 +252,7 @@ include("_head.php");
                                                         if($isNew) {
                                                         ?>
                                                             <div class="show-data">
-                                                               <?php $selected_value="";  include("_include/startup_acceleration_options.php"); ?>
+                                                               <?php $selected_value=""; $all_acceleration_string="Select Acceleration"; include("_include/startup_acceleration_options.php"); ?>
                                                             </div>
                                                         <?php } else { ?>
                                                             <div class="show-data">
@@ -260,7 +260,7 @@ include("_head.php");
                                                                 <a class="btn btn-light btn-sm float-right edit"><i class="fas fa-pencil-alt"></i></a>
                                                             </div>
                                                             <div class="edit-data">
-                                                                <?php $selected_value=""; include("_include/startup_acceleration_options.php"); ?>
+                                                                <?php $selected_value=""; $all_acceleration_string="Select Acceleration"; include("_include/startup_acceleration_options.php"); ?>
                                                                 <a class="btn btn-success float-right save"><i class="fas fa-check"></i></a>
                                                                 <a class="btn btn-light float-right mr-2 cancel"><i class="fas fa-times"></i></a>
                                                             </div>
