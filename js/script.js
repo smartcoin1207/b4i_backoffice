@@ -535,7 +535,54 @@
 	// APPEND STATUS CONTROL
 	$('#dataTable-startups_length label').after('<a href="#status" class="ml-5" id="change-status" style="display:none;"><i class="fas fa-toggle-off mr-2"></i>Change status</a>');
 	$('#dataTable_length label').after('<a href="#status" class="ml-5" id="change-status" style="display:none;"><i class="fas fa-toggle-off mr-2"></i>Change status</a>');
+
+	var checkbox_html = '<div class="accleration-type-checkbox-group row">';
 	
+	checkbox_html += '<div class="col-md-6 custom-flex"><input type="checkbox" id="acceleration_type_pre_acceleration" name="acceleration_type_check[]" value="Pre-acceleration" checked> <label for="acceleration_type_pre_acceleration" >Pre-Acceleration</label></div>';
+
+	checkbox_html += '<div class="col-md-6 custom-flex"><input type="checkbox" id="acceleration_type_acceleration" name="acceleration_type_check[]" value="Acceleration" checked> <label for="acceleration_type_acceleration" >Acceleration</label></div>';
+
+	checkbox_html += '</div>';
+	
+	$('#dataTable_filter').parent().before(checkbox_html);
+	$('#dataTable_filter').parent().parent().find('.col-sm-12.col-md-6').removeClass('col-md-6').addClass('col-md-4');
+	$('#dataTable_filter').parent().parent().find('.accleration-type-checkbox-group').removeClass('col-md-6').addClass('col-sm-12').addClass('col-md-4');
+
+
+	$(document).ready(function() {
+		// Function to filter table rows based on checkbox values
+		function filterTable() {
+			// Get all checked checkboxes
+			var selectedValues = $('input[name="acceleration_type_check[]"]:checked').map(function() {
+				return this.value;
+			}).get();
+			
+			// Filter rows
+			$('#dataTable').DataTable().rows().every(function() {
+				var data = this.data();
+				var accelerationType = data[Object.keys(data).length - 1];
+				var showRow = false; // Show all rows if no checkboxes are selected
+				showRow = selectedValues.length == 2 ? true : false;
+				if(!showRow) {
+					showRow = selectedValues.some(function(value) {
+						return accelerationType === value;
+					});
+				}
+				
+				$(this.node()).toggle(showRow);
+			});
+			
+			// Redraw table to apply the filter
+			$('#dataTable').DataTable().draw();
+		}
+		
+		// Attach the filter function to the checkbox change event
+		$('input[name="acceleration_type_check[]"]').on('change', function() {
+			filterTable();
+		});
+	});
+	
+
 	// CHANGE STATUS
 	$(document).on('click', '#change-status', function(e) {
 		e.preventDefault();
