@@ -3,6 +3,17 @@
 require_once "_conf.php";
 require_once "_auth.php";
 
+/** Thousand Three Comma Number */
+function formatThousandComma($number) {
+    $sanitizeNumber = sanitizeNumber($number);
+    return number_format($sanitizeNumber, 0, '.', ',');
+}
+
+function sanitizeNumber($input) {
+    // Remove non-numeric characters except for the decimal point
+    return preg_replace('/[^\d.]/', '', $input);
+}
+
 $field = "activation_date";
 $listLabel = "Utenti confermati";
 
@@ -161,9 +172,18 @@ if( !empty($_GET) ) {
 						GROUP BY sp.id
 						$investors
 						ORDER BY sp.created_on DESC";
-	// export
+			// export
 	if( !empty($_GET["action"]) && $_GET["action"]=="export" ) {
-		$query = "SELECT sp.*, s.call_name as call_name, s.startup_name as startup_name, GROUP_CONCAT(iv.id) AS investor_ids_list, GROUP_CONCAT(iv.name SEPARATOR ', ') AS investor_names
+		$query = "SELECT sp.*, s.call_name as call_name, s.startup_name as startup_name, GROUP_CONCAT(iv.id) AS investor_ids_list, GROUP_CONCAT(iv.name SEPARATOR ', ') AS investor_names, 
+						COUNT(iv.id) AS investors_count,
+						(SELECT COUNT(*) 
+							FROM main_founders AS mf
+							WHERE FIND_IN_SET(sp.startup_id, REPLACE(REPLACE(REPLACE(mf.startup_ids, '}{', ','), '{', ''), '}', '')) > 0 )
+							+
+							(SELECT COUNT(*) 
+							FROM co_founders AS cf
+							WHERE FIND_IN_SET(sp.startup_id, REPLACE(REPLACE(REPLACE(cf.startup_ids, '}{', ','), '{', ''), '}', '')) > 0 )
+						 AS founders_count
 						FROM startup_portfolios as sp
 						JOIN startups as s ON s.id = sp.startup_id
 						LEFT JOIN investors AS iv ON FIND_IN_SET(iv.id, REPLACE(REPLACE(REPLACE(sp.investor_ids, '}{', ','), '{', ''), '}', '')) > 0
@@ -173,8 +193,13 @@ if( !empty($_GET) ) {
 						ORDER BY sp.created_on DESC";
 						
 		$startup_portfolios_exports = DB::query($query);
-		$file = "startup_portfolios.csv";
-		include("_startup_portfolios.php");
+
+		if ($_GET['file'] === 'startup_portfolios') {
+			$file = "startup_portfolios.csv";
+			include("_startup_portfolios.php");
+		} elseif ($_GET['file'] === 'investor_data') {
+			include("_investors_csv.php");
+		}
 		exit;
 	}
 
@@ -232,9 +257,9 @@ include("_head.php");
 								<a id="search" href="#search" class="d-none d-sm-inline-block btn btn-sm btn-light shadow-sm mr-1">
 									<i class="fas fa-search fa-sm"></i>&nbsp;&nbsp;advanced search
 								</a>
-								<a id="export" href="<?php echo $actual_link;?>" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+								<button onclick="exportCsv()" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
 									<i class="fas fa-download fa-sm text-white-50"></i>&nbsp;&nbsp;export csv
-								</a>
+								</button>
 							</div>
 						</div>
 						
@@ -259,7 +284,7 @@ include("_head.php");
 							<hr>
 							<div class="form-inline">
 
-								<label for="call_name" class="mr-3 ml-3">Type</label>
+								<label for="call_name" class="mr-3 ml-3">Program</label>
 								<?php $selected_value=$_GET['acceleration_type'] ?? ''; $all_acceleration_string="All"; include("_include/startup_acceleration_options.php"); ?>
 								
 								<label for="call_name" class="mr-3 ml-3">Batch</label>
@@ -278,7 +303,6 @@ include("_head.php");
 								<input type="text" name="startup_name" id="startup_name" class="form-control" value="<?php if( !empty($_GET["startup_name"]) ) echo $_GET["startup_name"];?>">
 							</div>
 					
-
 							<hr>
 							<div class="form-inline">
 								<label for="raised" class="mr-3">Raised Range €</label>
@@ -292,7 +316,12 @@ include("_head.php");
 								<?php $selected_value = !empty($_GET["staged"]) ? $_GET["staged"]: "";  include("_include/startup_stagedoptions.php"); ?>
 
 								<label class="m-3" for="investor_ids">Investors</label>
-								<input type="text" name="investor_ids" id="investor_ids" class="form-control" value="<?php if( !empty($_GET["investor_ids"]) ) echo $_GET["investor_ids"];?>">
+								<div style="position:relative;">
+									<input type="text" name="investor_ids" id="investor_ids" class="form-control" value="<?php if( !empty($_GET["investor_ids"]) ) echo $_GET["investor_ids"];?>">
+									<ul id="suggestions" class="dropdown-menu" style="display: none;"></ul>
+								</div>
+								
+
 							</div>
 							<hr>
 							<div class="text-right">
@@ -361,7 +390,7 @@ include("_head.php");
 												</a>
 											</td>
 											<td><?php echo htmlentities($startup_portfolio["call_name"]);?></td>
-											<td style="text-wrap: nowrap;"><?php echo htmlentities("€ " . $startup_portfolio["raised"]);?></td>
+											<td style="text-wrap: nowrap;"><?php echo htmlentities("€ " . formatThousandComma($startup_portfolio["raised"]));?></td>
 											<td><?php echo htmlentities($startup_portfolio["staged"]);?></td>
 											<td data-order="<?php echo $startup_portfolio["announced_date"];?>"><?php  echo $announced_date;?></td>
 											<td><?php echo $year;?></td>
@@ -417,9 +446,26 @@ include("_head.php");
 	</div>
 
 	<script>
-	var _BASEURL = '<?php echo BASEURL;?>backoffice/';
-	var _TYPE = 'startup_portfolios';
+		var _BASEURL = '<?php echo BASEURL;?>backoffice/';
+		var _TYPE = 'startup_portfolios';
 	
+		// Function to download a file
+		function downloadFile(url, filename) {
+			const link = document.createElement('a');
+			link.href = url;
+			link.download = filename;
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+		}
+
+		function exportCsv() {
+			downloadFile(_BASEURL + 'startup_portfolios.php?file=startup_portfolios&action=export', 'startup_portfolios.csv');
+
+			setTimeout(() => {
+				downloadFile(_BASEURL + 'startup_portfolios.php?file=investor_data&action=export', 'investor_data.csv');
+			}, 2000);
+		}
 	</script>
 <?php
 include("_footer.php");

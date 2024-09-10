@@ -100,3 +100,24 @@ div.dataTables_wrapper div.dataTables_filter label {
 .custom-flex input[type="checkbox"] {
     margin-right: 3px;
 }
+
+
+#suggestions {
+    position: absolute;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+	width: 100%;
+}
+
+#suggestions li {
+    padding: 4px;
+    cursor: pointer;
+	border-bottom: 1px solid #cccccc59 ;
+}
+
+#suggestions li:hover {
+    background-color: #f0f0f0;
+}

@@ -1,11 +1,21 @@
 (function($) {
     "use strict"; // Start of use strict 
 
+    function convertToNumber(formattedNumber) {
+        // Remove commas from the string
+        const cleanedNumberString = formattedNumber.replace(/,/g, '');
+        
+        // Convert the cleaned string to a number
+        const number = Number(cleanedNumberString);
+        
+        return number;
+    }
+
     $('.startup_select').select2();
     $('.select2-container').css('width', 'calc(100%)');
     $('.select2-selection').css('height', 'calc(1.5em + .75rem + 2px)');
     $('.select2-search__field').addClass('form-control');
-    $('.select2-results ul').css('max-height', '400px');   
+    $('.select2-results ul').css('max-height', '400px');
 
     setTimeout(() => {
         $('#new_startup_btn').on('click', function() {
@@ -20,6 +30,7 @@
     
             // Validate the Raised field
             var raisedValue = $("input[name='raised']").val();
+            raisedValue = convertToNumber(raisedValue);
             if (isNaN(raisedValue) || raisedValue === "") {
                 $("input[name='raised']").after("<div class='validation-message text-danger'>Please enter a valid number for the Raised field.</div>");
                 return;
@@ -132,4 +143,27 @@
         });
 
     }, 1000);
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const input = document.getElementById('raisedInput');
+
+        // Format number with commas
+        function formatNumber(value) {
+            return Number(value).toLocaleString('en-US');
+        }
+
+        // Remove commas for plain number
+        function unformatNumber(value) {
+            return value.replace(/,/g, '');
+        }
+
+        // Event handler for formatting input
+        input.addEventListener('input', function(e) {
+            // Remove non-numeric characters
+            let value = e.target.value.replace(/[^0-9]/g, '');
+
+            // Format value and set it back to the input
+            e.target.value = formatNumber(value);
+        });
+    });
   })(jQuery);

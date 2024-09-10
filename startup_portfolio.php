@@ -7,6 +7,9 @@ require_once "_auth.php";
 if(isset($_POST["cmd"]) && $_POST["cmd"] == "new_startup") {
     $startup_id = isset($_POST["startup_id"]) ? $_POST["startup_id"] : "";
     $raised = isset($_POST["raised"]) ? $_POST["raised"] : 0;
+    $cleanedRaised = str_replace(',', '', $raised);
+    $raised = is_numeric($cleanedRaised) ? floatval($cleanedRaised) : 0;
+
     $staged = isset($_POST["staged"]) ? $_POST["staged"] : "";
     $announced_date = isset($_POST["announced_date"]) && $_POST['announced_date'] ? $_POST["announced_date"] : date('Y-m-d');
     $investors = isset($_POST["investor_ids"]) ? $_POST["investor_ids"] : [];
@@ -80,6 +83,19 @@ if(isset($_POST["cmd"]) && $_POST["cmd"] == "new_investor") {
     exit;
 }
 /** ------------------------------------------- */
+
+
+/** Thousand Three Comma Number */
+function formatThousandComma($number) {
+    $sanitizeNumber = sanitizeNumber($number);
+    return number_format($sanitizeNumber, 0, '.', ',');
+}
+
+function sanitizeNumber($input) {
+    // Remove non-numeric characters except for the decimal point
+    return preg_replace('/[^\d.]/', '', $input);
+}
+
 
 $isNew = isset($_GET['new']) && $_GET['new'] == '1';
 
@@ -229,15 +245,15 @@ include("_head.php");
                                                         if($isNew) {
                                                         ?>
                                                             <div class="show-data">
-                                                                <input type="number" name="raised" class="form-control d-inline">
+                                                                <input type="text" name="raised" id="raisedInput" class="form-control d-inline">
                                                             </div>
                                                         <?php } else { ?>
                                                             <div class="show-data">
-                                                                <b class="text-gray-900 data-value"><?php echo htmlentities($startup_portfolio["raised"]);?></b>
+                                                                <b class="text-gray-900 data-value"><?php echo htmlentities(formatThousandComma($startup_portfolio["raised"]));?></b>
                                                                 <a class="btn btn-light btn-sm float-right edit"><i class="fas fa-pencil-alt"></i></a>
                                                             </div>
                                                             <div class="edit-data">
-                                                                <input type="number" name="raised" class="form-control d-inline" style="width: calc(100% - 110px);">
+                                                                <input type="text" name="raised" id="raisedInput" class="form-control d-inline" style="width: calc(100% - 110px);">
                                                                 <a class="btn btn-success float-right save"><i class="fas fa-check"></i></a>
                                                                 <a class="btn btn-light float-right mr-2 cancel"><i class="fas fa-times"></i></a>
                                                             </div>
@@ -246,7 +262,7 @@ include("_head.php");
                                                 </tr>
 
                                                 <tr>
-                                                    <td class="text-right text-gray-500" style="width: 30%">Type</td>
+                                                    <td class="text-right text-gray-500" style="width: 30%">Program</td>
                                                     <td>
                                                         <?php 
                                                         if($isNew) {

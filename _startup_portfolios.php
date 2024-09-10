@@ -15,6 +15,7 @@ array_push($data, array(
 	"Year",
 	"Investors",
 	"Notes",
+	"Founders Count",
 	"Created on",
 ));
 
@@ -31,6 +32,7 @@ foreach( $startup_portfolios_exports as $startup_portfolio ) {
 		date("Y", strtotime($startup_portfolio["announced_date"])),
 		$startup_portfolio['investor_names'],
 		$startup_portfolio['notes'],
+		$startup_portfolio['founders_count'],
 		$startup_portfolio['created_on']
 	));
 }

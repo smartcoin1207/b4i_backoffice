@@ -28,6 +28,10 @@
 		return dateString;
 	}
 
+	function formatThreeCommaNumber(data) {
+		return data ? data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : '$0';
+	}
+
   // Toggle the side navigation
   $("#sidebarToggle, #sidebarToggleTop").on('click', function(e) {
     $("body").toggleClass("sidebar-toggled");
@@ -81,11 +85,11 @@
   });
 
 	// Call the dataTables jQuery plugin
-	$('#dataTable').DataTable({
-		"oLanguage": {
-			"sSearch": "Filter"
-		}
-	});
+  $('#dataTable').DataTable({
+	"oLanguage": {
+		"sSearch": "Filter"
+	}
+});
 	
 	$('#dataTable-startups').DataTable({
 		"oLanguage": {
@@ -548,7 +552,6 @@
 	$('#dataTable_filter').parent().parent().find('.col-sm-12.col-md-6').removeClass('col-md-6').addClass('col-md-4');
 	$('#dataTable_filter').parent().parent().find('.accleration-type-checkbox-group').removeClass('col-md-6').addClass('col-sm-12').addClass('col-md-4');
 
-
 	$(document).ready(function() {
 		// Function to filter table rows based on checkbox values
 		function filterTable() {
@@ -653,6 +656,48 @@
 			} else {
 				alert('Ops! An error occurred...['+errorThrown+']');
 			}
+		});
+	});
+
+	$(document).ready(function() {
+		console.log("ssss");
+		$('#investor_ids').on('input', function() {
+			var query = $(this).val();
+			if (query.length > 2) {  // Trigger search only if input length > 2
+				$.ajax({
+					url: _BASEURL + 'search_investors.php',  // PHP script to handle the search
+					type: 'GET',
+					data: { query: query },
+					success: function(data) {
+						// Clear previous suggestions
+						$('#suggestions').empty().show();
+						
+						// Parse JSON response
+						var results = JSON.parse(data);
+						
+						// Add new suggestions to the dropdown
+						if (results.length > 0) {
+							$.each(results, function(index, item) {
+								$('#suggestions').append('<li><a href="#" class="dropdown-item" data-id="' + item.id + '">' + item.name + '</a></li>');
+							});
+						} else {
+							$('#suggestions').append('<li><a href="#" class="dropdown-item">No results found</a></li>');
+						}
+					}
+				});
+			} else {
+				$('#suggestions').hide();
+			}
+		});
+
+		// Handle suggestion selection
+		$('#suggestions').on('click', 'a', function(e) {
+			e.preventDefault();
+			var selectedValue = $(this).text();
+			var selectedId = $(this).data('id');
+			
+			$('#investor_ids').val(selectedValue);
+			$('#suggestions').hide();
 		});
 	});
 	
