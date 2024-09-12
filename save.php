@@ -27,10 +27,10 @@ if( !empty($_POST["id"]) && !empty($_POST["type"]) && !empty($_POST["field"]) &&
 	if( $table!="startups" && $table!="main_founders" && $table!="co_founders" && $table!="startup_portfolios" ) die("$table - Wrong type param");
 
 	$data = $_POST['data'];
-	//raised code
-	if($_POST['field'] == 'raised') {
+
+	if ($_POST['field'] == 'raised') {
 		$raised = isset($_POST["data"]) ? $_POST["data"] : 0;
-		$cleanedRaised = str_replace(',', '', $raised);
+		$cleanedRaised = str_replace('.', '', $raised);
 		$data = is_numeric($cleanedRaised) ? floatval($cleanedRaised) : 0;
 	}
 	

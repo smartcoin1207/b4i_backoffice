@@ -147,14 +147,14 @@
     document.addEventListener('DOMContentLoaded', function() {
         const input = document.getElementById('raisedInput');
 
-        // Format number with commas
+        // Format number with periods
         function formatNumber(value) {
-            return Number(value).toLocaleString('en-US');
+            return value.replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Use regex to insert periods
         }
 
-        // Remove commas for plain number
+        // Remove periods for plain number
         function unformatNumber(value) {
-            return value.replace(/,/g, '');
+            return value.replace(/\./g, ''); // Remove periods
         }
 
         // Event handler for formatting input

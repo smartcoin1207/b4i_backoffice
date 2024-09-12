@@ -88,7 +88,7 @@ if(isset($_POST["cmd"]) && $_POST["cmd"] == "new_investor") {
 /** Thousand Three Comma Number */
 function formatThousandComma($number) {
     $sanitizeNumber = sanitizeNumber($number);
-    return number_format($sanitizeNumber, 0, '.', ',');
+    return number_format($sanitizeNumber, 0, '.', '.');
 }
 
 function sanitizeNumber($input) {

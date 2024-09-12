@@ -4,23 +4,17 @@ $f = fopen('php://memory', 'w');
 // Define headers for the new CSV file
 $data = array();
 array_push($data, array(
-    "Startup Portfolio ID",
-    "Startup Name",
-    "Investors",
-    "Investors Count"
+    "Investor",
+    "Investments"
 ));
 
 // Loop through the startup portfolios and filter by investors_count > 0
-foreach( $startup_portfolios_exports as $startup_portfolio ) {
+foreach( $investors_exports as $investors_export ) {
     // Only include records where investors_count is greater than 0
-    if ($startup_portfolio['investors_count'] > 0) {
         array_push($data, array(
-            $startup_portfolio['id'],               // Startup Portfolio ID
-            $startup_portfolio['startup_name'],      // Startup Name
-            $startup_portfolio['investor_names'],    // Investor Names
-            $startup_portfolio['investors_count'],   // Investor Count
+            $investors_export['name'],      // Startup Name
+            $investors_export['portfolio_count'],   // Investor Count
         ));
-    }
 }
 
 // Write new data to the CSV

@@ -6,7 +6,7 @@ require_once "_auth.php";
 /** Thousand Three Comma Number */
 function formatThousandComma($number) {
     $sanitizeNumber = sanitizeNumber($number);
-    return number_format($sanitizeNumber, 0, '.', ',');
+    return number_format($sanitizeNumber, 0, '.', '.');
 }
 
 function sanitizeNumber($input) {
@@ -175,7 +175,6 @@ if( !empty($_GET) ) {
 			// export
 	if( !empty($_GET["action"]) && $_GET["action"]=="export" ) {
 		$query = "SELECT sp.*, s.call_name as call_name, s.startup_name as startup_name, GROUP_CONCAT(iv.id) AS investor_ids_list, GROUP_CONCAT(iv.name SEPARATOR ', ') AS investor_names, 
-						COUNT(iv.id) AS investors_count,
 						(SELECT COUNT(*) 
 							FROM main_founders AS mf
 							WHERE FIND_IN_SET(sp.startup_id, REPLACE(REPLACE(REPLACE(mf.startup_ids, '}{', ','), '{', ''), '}', '')) > 0 )
@@ -193,6 +192,16 @@ if( !empty($_GET) ) {
 						ORDER BY sp.created_on DESC";
 						
 		$startup_portfolios_exports = DB::query($query);
+
+		$investors_query = "SELECT i.id, i.name, COUNT(sp.id) as portfolio_count
+							FROM investors i
+							JOIN startup_portfolios sp
+							ON sp.investor_ids LIKE CONCAT('%{', i.id, '}%')
+							GROUP BY i.id, i.name
+							HAVING portfolio_count > 0
+							ORDER BY portfolio_count DESC;";
+		
+		$investors_exports = DB::query($investors_query);
 
 		if ($_GET['file'] === 'startup_portfolios') {
 			$file = "startup_portfolios.csv";
@@ -316,12 +325,10 @@ include("_head.php");
 								<?php $selected_value = !empty($_GET["staged"]) ? $_GET["staged"]: "";  include("_include/startup_stagedoptions.php"); ?>
 
 								<label class="m-3" for="investor_ids">Investors</label>
-								<div style="position:relative;">
-									<input type="text" name="investor_ids" id="investor_ids" class="form-control" value="<?php if( !empty($_GET["investor_ids"]) ) echo $_GET["investor_ids"];?>">
-									<ul id="suggestions" class="dropdown-menu" style="display: none;"></ul>
+								<div class="col-md-6" style="position:relative; padding: 0;">
+									<input type="text" name="investor_ids" id="investor_ids" class="form-control" style="width: 100%;" value="<?php if( !empty($_GET["investor_ids"]) ) echo $_GET["investor_ids"];?>">
+									<ul id="suggestions" class="dropdown-menu" style="display: none; width: 100%;"></ul>
 								</div>
-								
-
 							</div>
 							<hr>
 							<div class="text-right">
