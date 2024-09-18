@@ -186,7 +186,8 @@ if( !empty($_GET) ) {
 						FROM startup_portfolios as sp
 						JOIN startups as s ON s.id = sp.startup_id
 						LEFT JOIN investors AS iv ON FIND_IN_SET(iv.id, REPLACE(REPLACE(REPLACE(sp.investor_ids, '}{', ','), '{', ''), '}', '')) > 0
-						WHERE 1=1 $date_start $date_end $startup_name $acceleration_type $call_name $raised_min $raised_max $staged $year
+						WHERE 1=1 $date_start $date_end $startup_name $acceleration_type $call_name $raised_min $raised_max $staged $year AND
+						sp.acceleration_type IN ('Acceleration', 'Pre-acceleration')
 						GROUP BY sp.id
 						$investors
 						ORDER BY sp.created_on DESC";
@@ -197,6 +198,7 @@ if( !empty($_GET) ) {
 							FROM investors i
 							JOIN startup_portfolios sp
 							ON sp.investor_ids LIKE CONCAT('%{', i.id, '}%')
+							WHERE sp.acceleration_type IN ('Acceleration', 'Pre-Acceleration')
 							GROUP BY i.id, i.name
 							HAVING portfolio_count > 0
 							ORDER BY portfolio_count DESC;";
@@ -392,12 +394,12 @@ include("_head.php");
 												<input type="checkbox" name="status[]" value="<?php echo $startup_portfolio["id"];?>" data-status="<?php echo $startup_portfolio["status"];?>">
 											</td>
 											<td>
-												<a href="<?php echo BASEURL;?>backoffice/startup_portfolio/<?php echo $startup_portfolio["id"];?>/">
+												<a href="<?php echo BASEURL;?>backoffice/startup_portfolio/<?php echo $startup_portfolio["id"];?>/" class="<?php if(!$startup_portfolio['acceleration_type']) echo 'red-text'; ?>">
 													<?php echo htmlentities($startup_portfolio["startup_name"]);?>
 												</a>
 											</td>
 											<td><?php echo htmlentities($startup_portfolio["call_name"]);?></td>
-											<td style="text-wrap: nowrap;"><?php echo htmlentities("€ " . formatThousandComma($startup_portfolio["raised"]));?></td>
+											<td style="text-wrap: nowrap;"><?php echo htmlentities("€ " . ($startup_portfolio["raised"]));?></td>
 											<td><?php echo htmlentities($startup_portfolio["staged"]);?></td>
 											<td data-order="<?php echo $startup_portfolio["announced_date"];?>"><?php  echo $announced_date;?></td>
 											<td><?php echo $year;?></td>

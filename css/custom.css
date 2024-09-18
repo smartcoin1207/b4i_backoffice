@@ -121,3 +121,8 @@ div.dataTables_wrapper div.dataTables_filter label {
 #suggestions li:hover {
     background-color: #f0f0f0;
 }
+
+.red-text {
+	color: red;
+	opacity: 0.5;
+}

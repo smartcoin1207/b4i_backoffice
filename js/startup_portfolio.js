@@ -3,7 +3,7 @@
 
     function convertToNumber(formattedNumber) {
         // Remove commas from the string
-        const cleanedNumberString = formattedNumber.replace(/,/g, '');
+        const cleanedNumberString = formattedNumber.replace(/./g, '');
         
         // Convert the cleaned string to a number
         const number = Number(cleanedNumberString);

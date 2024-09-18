@@ -8,7 +8,7 @@ array_push($data, array(
 	"Startup Id",
 	"Startup Name",
 	"Batch",
-	"Type",
+	"Program",
 	"Raised",
 	"Funding Stage",
 	"Announced Date",

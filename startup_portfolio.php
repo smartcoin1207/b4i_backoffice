@@ -7,7 +7,7 @@ require_once "_auth.php";
 if(isset($_POST["cmd"]) && $_POST["cmd"] == "new_startup") {
     $startup_id = isset($_POST["startup_id"]) ? $_POST["startup_id"] : "";
     $raised = isset($_POST["raised"]) ? $_POST["raised"] : 0;
-    $cleanedRaised = str_replace(',', '', $raised);
+    $cleanedRaised = str_replace('.', '', $raised);
     $raised = is_numeric($cleanedRaised) ? floatval($cleanedRaised) : 0;
 
     $staged = isset($_POST["staged"]) ? $_POST["staged"] : "";

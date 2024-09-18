@@ -88,7 +88,20 @@
   $('#dataTable').DataTable({
 	"oLanguage": {
 		"sSearch": "Filter"
-	}
+	},
+	columnDefs: [
+		{
+			targets: 3, // The column index for "Raised"
+			render: function(data, type, row) {
+				// If type is 'display', format the number with commas
+				if (type === 'display') {
+					return formatThreeCommaNumber(data);
+				}
+				// Otherwise, return the raw data for sorting purposes
+				return data;
+			}
+		}
+	]
 });
 	
 	$('#dataTable-startups').DataTable({
