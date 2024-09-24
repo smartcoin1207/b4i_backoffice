@@ -16,6 +16,7 @@ RewriteRule ^startup/(.*)$        ./startup.php?id=$1 [L,QSA]
 RewriteRule ^main_founders/?$     ./main_founders.php [L,QSA]
 RewriteRule ^co_founders/?$       ./co_founders.php [L,QSA]
 RewriteRule ^startup_portfolios/?$       ./startup_portfolios.php [L,QSA]
+RewriteRule ^investors/?$       ./investors.php [L,QSA]
 
 RewriteRule ^main_founder/(.*)$   ./founder.php?type=main_founders&id=$1 [L,QSA]
 RewriteRule ^co_founder/(.*)$     ./founder.php?type=co_founders&id=$1 [L,QSA]

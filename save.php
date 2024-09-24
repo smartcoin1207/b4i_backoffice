@@ -14,11 +14,9 @@ if( isset($_SESSION["adminId"]) ) {
 	session_write_close();
 
 } else {
-
 	header($_SERVER["SERVER_PROTOCOL"]." 401 Unauthorized", true, 401);
 	session_write_close();
 	exit();
-
 }
 
 if( !empty($_POST["id"]) && !empty($_POST["type"]) && !empty($_POST["field"]) && isset($_POST["data"]) ) {

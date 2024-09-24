@@ -462,9 +462,9 @@ include("_head.php");
 	      <div class="modal-body">
 	        <p>Do you confirm to change the status?</p>
 	        <form id="form-dismiss-device" method="post">
-		        <input type="hidden" name="id" value="<?php echo $startup_portfolio["id"];?>">
-		        <input type="hidden" name="table" value="startup_portfolios">
-		      </form>
+                <input type="hidden" name="id" value="<?php echo $startup_portfolio["id"];?>">
+                <input type="hidden" name="table" value="startup_portfolios">
+            </form>
 	      </div>
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-light" id="btn-dismiss-modal" data-dismiss="modal">Cancel</button>

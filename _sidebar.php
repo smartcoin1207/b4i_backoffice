@@ -39,6 +39,12 @@
 					<span>Startup portfolio</span></a>
 			</li>
 
+			<li class="nav-item <?php if( $section=="investors" ) echo "active";?>">
+				<a class="nav-link" href="<?php echo BASEURL;?>backoffice/investors/">
+					<i class="fas fa-fw fa-book-open"></i>
+					<span>Investors</span></a>
+			</li>
+
 			<li class="nav-item">
 				<a class="nav-link" href="<?php echo BASEURL;?>backoffice/export_all/">
 					<i class="fas fa-fw fa-download"></i>

@@ -29,7 +29,7 @@
 	}
 
 	function formatThreeCommaNumber(data) {
-		return data ? data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : '$0';
+		return data ? data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") : '$0';
 	}
 
   // Toggle the side navigation
@@ -85,25 +85,39 @@
   });
 
 	// Call the dataTables jQuery plugin
-  $('#dataTable').DataTable({
-	"oLanguage": {
-		"sSearch": "Filter"
-	},
-	columnDefs: [
-		{
-			targets: 3, // The column index for "Raised"
-			render: function(data, type, row) {
-				// If type is 'display', format the number with commas
-				if (type === 'display') {
-					return formatThreeCommaNumber(data);
+  	$('#dataTable').DataTable({
+		"oLanguage": {
+			"sSearch": "Filter"
+		},
+		columnDefs: [
+			{
+				targets: 3, // The column index for "Raised"
+				render: function(data, type, row) {
+					// If type is 'display', format the number with commas
+					if (type === 'display') {
+						return formatThreeCommaNumber(data);
+					}
+					// Otherwise, return the raw data for sorting purposes
+					return data;
 				}
-				// Otherwise, return the raw data for sorting purposes
-				return data;
 			}
-		}
-	]
-});
-	
+		]
+	});
+
+	// Call the dataTables jQuery plugin For Investors Datatable
+	$('#investors_datatable').DataTable({
+		"oLanguage": {
+			"sSearch": "Filter"
+		},
+		"columnDefs": [
+			{ 
+                "orderable": false,  // Disable sorting for the first column
+                "targets": 0,
+                "width": "20px"     // Set the width for the first column
+            }
+		]
+	});
+
 	$('#dataTable-startups').DataTable({
 		"oLanguage": {
 			"sSearch": "Filter"
@@ -546,6 +560,14 @@
 		} else {
 			$('#founders-list input[name="status[]"]').prop('checked', 0);
 			$('#change-status').hide();
+		}
+	});
+
+	$(document).on('change', '#set-all', function() {
+		if( $(this).prop('checked') ) {
+			$('#investors-list input[name="investor_ids[]"]').prop('checked', 1);
+		} else {
+			$('#investors-list input[name="investor_ids[]"]').prop('checked', 0);
 		}
 	});
 	
